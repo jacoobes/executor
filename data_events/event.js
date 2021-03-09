@@ -1,9 +1,8 @@
 
-const {
-    Payload
-} = require("./payload");
+const { CommandIpsum } = require("../mainExecutor/executor");
 
-class CustomEventHandler extends Payload {
+
+class CustomEventHandler extends CommandIpsum {
 
 
     async detectPayloadFiles() {

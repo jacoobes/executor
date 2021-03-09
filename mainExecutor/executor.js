@@ -218,161 +218,154 @@ const chalk = require('chalk')
 
 
 class CommandIpsum {
-    
+
     constructor(payload) {
 
         this.payload = payload
 
-        
-        if(payload == null) {
 
-            return console.log('LoremIpsum requires a payload.')
+        if (payload == null) {
+
+            return console.error('LoremIpsum requires a payload.')
 
         }
 
-        ( function sendPayload() {
-            
-            module.exports.payloadInstance = payload
-            
-        })()
+        let run = async function () {
 
 
-    }
+            let fileCollection = await payload.fileCache()
 
-    
-
-    async fetchPayloadFiles() {
-
-        let fileCollection = await this.payload.fileCache()
-       
-        return fileCollection
-     
-    } 
-
-    async loadAllCommands () {
-
-        
-        let commandCollection = new Map()
-
-        
-        let fileCollection = await this.fetchPayloadFiles()
-        
-        for(let i = 0 ; i < fileCollection.length; i++) {
-
-            let file = require(fileCollection[i])
-
-            commandCollection.set(file.name, file)
-
-            
-            
-        }
-
-        for(let i = 0; i < fileCollection.length; i++) {
-
-            let file = require(fileCollection[i])
-
-            let aliases = file.aliases || undefined
-
-            if(aliases != null) {
-                for(let j = 0; j < aliases.length; j++) {
-                    
-                    commandCollection.set(aliases[j], file)
-
-                }
-            }
-               
-        }
-        
-        //
-      
-       return commandCollection
+            let commandCollection = new Map()
+            let aliasCollection = new Map()
 
 
-    }
+            for (let i = 0; i < fileCollection.length; i++) {
+
+                let file = require(fileCollection[i])
+
+                commandCollection.set(file.name, file)
 
 
-    defaultRun() {
-
-        const {
-            Argument
-        } = require('../Argument/argumentHandler')
-        
-        
-        let { prefix, client } = this.payload.data
-
-        client.on('message', async message => {
-
-            let commandCollection = await this.loadAllCommands()
-           
-            if(message.author.bot) return;
-
-            if(!message.content.toLowerCase().startsWith(prefix)) return;
-
-            let messageEmitted = message.content.split(/\s+/g)
-
-            let command = commandCollection.get(messageEmitted[1]) || null
-
-            if (command == null) return message.reply('Command not found.')
-
-            let {
-                usesArguments
-            } = command
-
-            let {
-                usesArguments: {
-                    argType,
-                    array,
-                    validate,
-                    typeError,
-                    validateError,
-                }
-            } = command
-
-
-            let argument = new Argument(messageEmitted, array, argType, validate)
-
-            if (usesArguments) {
-                
-                argument.setArray()
-                if(!argument.ensureValidationFunction()) {
-
-                    return message.reply(validateError)
-
-                }
-                
-                if(argument.type() !== argType) {
-
-                    if(typeError == null)  {
-                    
-                    return message.reply(`Incorrect type. Require(s) \`${argType}\`. Received \`${argument.type()}\`` )
-                    }
-                    else {
-                        return message.reply(typeError)
-                    }
-
-                    
-                }
-
-
-                return command.callback(client, message, argument)
-
-                } else {
-
-                return command.callback(client, message)
 
             }
 
+            for (let i = 0; i < fileCollection.length; i++) {
+
+                let file = require(fileCollection[i])
+
+                let aliases = file.aliases || undefined
+
+                if (aliases != null) {
+                    for (let j = 0; j < aliases.length; j++) {
+
+                        aliasCollection.set(aliases[j], file)
+
+                    }
+                }
+
+            }
+
+            return {
+                commandCollection,
+                aliasCollection
+            }
 
 
-        })
+        }
+        if (payload.data.events == null) {
+            
+            let loadCommands = (async function (run) {
+
+                let {
+                    commandCollection,
+                    aliasCollection
+                } = await run()
+
+                const {
+                    Argument
+                } = require('../Argument/argumentHandler')
+
+
+                let {
+                    prefix,
+                    client
+                } = payload.data
+
+                client.on('message', async message => {
+
+
+                    if (message.author.bot) return;
+
+                    if (!message.content.toLowerCase().startsWith(prefix)) return;
+
+                    let messageEmitted = message.content.split(/\s+/g)
+
+                    let command = commandCollection.get(messageEmitted[1]) || aliasCollection.get(messageEmitted[1]) || null
+
+                    if (command == null) return message.reply('Command not found.')
+
+                    let {
+                        usesArguments
+                    } = command
+
+                    let {
+                        usesArguments: {
+                            argType,
+                            array,
+                            validate,
+                            typeError,
+                            validateError,
+                            noArgumentsError,
+                        }
+                    } = command
+
+
+                    let argument = new Argument(messageEmitted, array, argType, validate)
+
+                    if (usesArguments) {
+
+                        argument.setArray()
+                        if (!argument.ensureValidationFunction()) {
+
+                            return message.reply(validateError)
+
+                        }
+
+                        if (argument.type() !== argType) {
+
+                            if (argument.argument === '') {
+
+                                let noArgErr = noArgumentsError || 'Please provide arguments'
+                                return message.reply(noArgErr)
+
+                            }
+
+                            let typeErr = typeError || `Incorrect type. Require(s) \`${argType}\`. Received \`${argument.type()}\``
+
+                            return message.reply(typeErr)
+
+
+                        }
+
+
+                        return command.callback(client, message, argument)
+
+                    } else {
+
+                        return command.callback(client, message)
+
+                    }
 
 
 
+                })
 
 
+            })(run)
 
-
+        }
     }
+
 
 
 
@@ -383,8 +376,8 @@ class CommandIpsum {
     }) {
 
         let commandCollection = new Map()
-        
-        
+
+
         let {
             consoleCommands,
             consoleRAM,
@@ -424,7 +417,7 @@ class CommandIpsum {
         if (customMessage) {
             console.log(wantsLog.customMessage)
         }
-    
+
 
 
 

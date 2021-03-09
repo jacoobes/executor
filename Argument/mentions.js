@@ -1,17 +1,17 @@
 
 /**
  * @param {Message} message - Your message parameter
- * @param {String} arguments - Can take in an array or string. Returns Collection or Object of Collections
+ * @param {String} this.argument - Can take in an array or string. Returns Collection or Object of Collections
  */
-function getMentions(message, arguments) {
+function getMentions(argument, message) {
 
     const objectContainingMentions = {}
-    let anyIDs = turnMentionIntoID(arguments)
+    let anyIDs = turnMentionIntoID(argument)
 
-    if (Array.isArray(arguments)) {
+    if (Array.isArray(argument)) {
         let mentionMap = new Map()
 
-        mentionMap = arguments.reduce((accumulator, currentValue, index) => {
+        mentionMap = argument.reduce((accumulator, currentValue, index) => {
             accumulator.set(
                 currentValue,
 
@@ -22,8 +22,8 @@ function getMentions(message, arguments) {
             return accumulator
         }, mentionMap)
 
-        for (var i = 0; i < arguments.length; i++) {
-            objectContainingMentions[`mention${i}`] = mentionMap.get(arguments[i])
+        for (var i = 0; i < argument.length; i++) {
+            objectContainingMentions[`mention${i}`] = mentionMap.get(argument[i])
 
             objectContainingMentions[`mention${i}`] === undefined ?
                 delete objectContainingMentions[`mention${i}`] :
@@ -36,9 +36,9 @@ function getMentions(message, arguments) {
     }
 }
 
-function turnMentionIntoID(arguments) {
-    if (Array.isArray(arguments)) {
-        let onlyUniques = [...new Set(arguments.map((mentions) => mentions))]
+function turnMentionIntoID(argument) {
+    if (Array.isArray(argument)) {
+        let onlyUniques = [...new Set(argument.map((mentions) => mentions))]
 
         onlyUniques = onlyUniques.reduce((accumulator, currentValue) => {
             currentValue = currentValue.replace(/[<>@!&]/g, '')
@@ -50,7 +50,7 @@ function turnMentionIntoID(arguments) {
         return onlyUniques
     } else {
 
-        return arguments.replace(/[<>@!&]/g, '')
+        return argument.replace(/[<>@!&]/g, '')
     }
 }
 
