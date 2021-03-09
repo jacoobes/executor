@@ -1,10 +1,14 @@
 const {
     getMentions
 } = require('./mentions')
+const
+    randomInt = require('./randomInt')
+
 const {
-    randomInt
-} = require('./randomInt')
-const {getOwnerInfo} = require('./clientInfo')
+    extract
+} = require('./extract')
+
+
 
 class Argument {
 
@@ -18,7 +22,7 @@ class Argument {
         this.utils = {
             getMentions: getMentions,
             randomInt: randomInt,
-            getOwnerInfo: getOwnerInfo
+            extract: extract
         }
 
 
@@ -37,33 +41,93 @@ class Argument {
 
     }
 
-    setType() {
+    type() {
 
-        let desiredType = this.argType
+        let desiredType = this.array ? this.argType.split(" ") : this.argType
+
+        
         /**
-         * All type coercion: 
-         * String, Boolean, Number, Map, Set, flex 
+         * All type checks: 
+         * String, Integer, Number, Character,  flex 
          * 
          * 
          */
 
-        if (this.argType === 'flex') return this.argument
+        let nonNumerics = {
+            character: 'character',
+            string: 'string',
+        }
+        let numerics = {
+            number: 'number',
+            double: 'decimal',
+            integer: 'integer',
+        } 
 
-        if (Array.isArray(this.argument)) {
+        if (Array.isArray(desiredType)) {
 
-            return this.argument = this.argument.map(
-                el => desiredType(el))
+        
+            let argLine = "";
+            let index = 0;
+            for(let header of desiredType) {
+
+                let argument = nonNumerics[desiredType[index]] ?? 
+                numerics[desiredType[index]] ?? 
+                'flex'
+               
+
+                argument = +this.argument[index] || this.argument[index]
+                
+                if(header === 'flex') argLine+='flex ';
+
+                if (typeof argument === 'string') {
+                  
+                    argLine += argument.length === 1 ? 'character ' : 'string ';
+                     
+                } else if(typeof argument === 'number'){
+                    
+                    argLine += Number.isInteger(argument) ? 'integer ' : 'decimal ';
+    
+                  } else {
+    
+                    void 0
+                  }
+
+                index++;  
+
+            }
+            
+            return argLine.trimEnd()
 
         } else {
 
-            return this.argument = this.argType(this.argument) || new this.argType(this.argument)
+            let type = nonNumerics[desiredType] ?? 
+            numerics[desiredType] ?? 
+            'flex' ??
+            console.error(new Error('Type mismatch. Check argType header. Must be of type number, character, flex, string, or integer'))
+
+            type = +this.argument || this.argument;
+
+            if (desiredType === 'flex') return 'flex';
+
+            if (typeof type === 'string') {
+
+                return this.argument.length === 1 ? 'character' : 'string';
+                 
+            } else if(typeof type === 'number'){
+                //going to add 'number generic type'
+                return this.argument % 1 === 0 ? 'integer' : 'double';
+
+              } else {
+
+                (void 0)
+              }
 
         }
 
     }
 
     ensureValidationFunction() {
-        if (this.validate == null) return;
+        if (this.validate == null) return true;
 
 
         let passesTest = this.validate(this.argument)
@@ -80,7 +144,10 @@ class Argument {
 
 
 
+
 }
+
+
 
 
 module.exports.Argument = Argument

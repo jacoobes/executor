@@ -1,5 +1,6 @@
 const chalk = require('chalk')
-const glob = require('glob')
+
+
 
 // const commandHandler = (() => {
 
@@ -214,44 +215,102 @@ const glob = require('glob')
 //     }
 // })()
 
-class CommandIpsum {
 
+
+class CommandIpsum {
+    
     constructor(payload) {
+
         this.payload = payload
+
+        
+        if(payload == null) {
+
+            return console.log('LoremIpsum requires a payload.')
+
+        }
+
+        ( function sendPayload() {
+            
+            module.exports.payloadInstance = payload
+            
+        })()
+
 
     }
 
-    defaultRun() {
+    
 
-        let {
-            client,
-            prefix
-        } = this.payload.getPayload()
+    async fetchPayloadFiles() {
+
+        let fileCollection = await this.payload.fileCache()
+       
+        return fileCollection
+     
+    } 
+
+    async loadAllCommands () {
+
+        
+        let commandCollection = new Map()
+
+        
+        let fileCollection = await this.fetchPayloadFiles()
+        
+        for(let i = 0 ; i < fileCollection.length; i++) {
+
+            let file = require(fileCollection[i])
+
+            commandCollection.set(file.name, file)
+
+            
+            
+        }
+
+        for(let i = 0; i < fileCollection.length; i++) {
+
+            let file = require(fileCollection[i])
+
+            let aliases = file.aliases || undefined
+
+            if(aliases != null) {
+                for(let j = 0; j < aliases.length; j++) {
+                    
+                    commandCollection.set(aliases[j], file)
+
+                }
+            }
+               
+        }
+        
+        //
+      
+       return commandCollection
+
+
+    }
+
+
+    defaultRun() {
 
         const {
             Argument
         } = require('../Argument/argumentHandler')
+        
+        
+        let { prefix, client } = this.payload.data
 
-        const {
-            allCommands: {
-                aliasCollection,
-                commandCollection
-            }
-        } = require('../data_events/payload')
+        client.on('message', async message => {
 
-
-
-        client.on('message', message => {
-
-            module.exports.message = message
-
+            let commandCollection = await this.loadAllCommands()
            
             if(message.author.bot) return;
+
             if(!message.content.toLowerCase().startsWith(prefix)) return;
 
             let messageEmitted = message.content.split(/\s+/g)
 
-            let command = aliasCollection.get(messageEmitted[1]) || commandCollection.get(messageEmitted[1]) || null
+            let command = commandCollection.get(messageEmitted[1]) || null
 
             if (command == null) return message.reply('Command not found.')
 
@@ -263,7 +322,9 @@ class CommandIpsum {
                 usesArguments: {
                     argType,
                     array,
-                    validate
+                    validate,
+                    typeError,
+                    validateError,
                 }
             } = command
 
@@ -271,15 +332,31 @@ class CommandIpsum {
             let argument = new Argument(messageEmitted, array, argType, validate)
 
             if (usesArguments) {
-
+                
                 argument.setArray()
-                argument.setType()
-                argument.ensureValidationFunction()
-                argument.send()
+                if(!argument.ensureValidationFunction()) {
+
+                    return message.reply(validateError)
+
+                }
+                
+                if(argument.type() !== argType) {
+
+                    if(typeError == null)  {
+                    
+                    return message.reply(`Incorrect type. Require(s) \`${argType}\`. Received \`${argument.type()}\`` )
+                    }
+                    else {
+                        return message.reply(typeError)
+                    }
+
+                    
+                }
+
 
                 return command.callback(client, message, argument)
 
-            } else {
+                } else {
 
                 return command.callback(client, message)
 
@@ -288,6 +365,12 @@ class CommandIpsum {
 
 
         })
+
+
+
+
+
+
 
     }
 
@@ -299,12 +382,9 @@ class CommandIpsum {
         customMessage: false
     }) {
 
-        let {
-            allCommands: {
-                commandCollection
-            }
-        } = require('../data_events/payload')
-
+        let commandCollection = new Map()
+        
+        
         let {
             consoleCommands,
             consoleRAM,
@@ -344,12 +424,17 @@ class CommandIpsum {
         if (customMessage) {
             console.log(wantsLog.customMessage)
         }
-
+    
 
 
 
     }
 
+    sendPayload() {
+
+        module.exports.handlerPayload = this.payload
+
+    }
 
 }
 

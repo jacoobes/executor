@@ -1,82 +1,63 @@
-const glob = require('glob')
+
 
 class Payload {
 
     constructor(data = {commands: path, events: eventPath, owners: owners, prefix: prefix, client: client}) {
         this.data = data
+        
     }
     getPayload() {
 
         return this.data
 
-    }
-
-    detectPayloadFiles() {
+    } 
 
     
-        let commandCollection = new Map()
-        let aliasCollection = new Map()
+
+    /**
+     * 
+     * Gets all file directories and puts it into an Array.
+     */
+
+    async fileCache() {
 
         const {join} = require('path')
-
     
-        let {commands} = this.data
-
-        let getCommands = join(require.main.path, commands)
-
-        let getDirectories = async function (src, callback) {
-            
-                await new Promise((resolve) => { 
-                    
-                    resolve(glob(src + '/**/*', callback))
-                })
-            }
-
-
-        getDirectories(getCommands, function (err, res) {
-
-            if (err) {
-                console.log('Error', err)
-                return
-            }
-
-
-            let fileCollection = res
-                .map((element) => (element.endsWith('js') ? element : undefined))
-                .filter(Boolean)
-
-            for (let module of fileCollection) {
-                let moduleObj = require(module)
-
-                commandCollection = commandCollection.set(moduleObj.name, require(module))
-
-                for (let module of fileCollection) {
-                    let moduleObj = require(module)
-                    if (moduleObj.aliases != null) {
-
-                        moduleObj.aliases.forEach((name) => {
-                            aliasCollection = aliasCollection.set(name, require(module))
-                        })
-                    }
-                }
-            }
-        })
-
-    let allCommands = {
-        commandCollection,
-        aliasCollection
-    }
+        let commands = this.data.commands
     
-    module.exports.allCommands = allCommands
+         let commandsPath = join(require.main.path, commands)
+
+       
+        
+      
+       const { resolve } = require('path');
+       const { readdir } = require('fs').promises;
+
+       //let categories = await readdir(commandsPath, 'utf8')
+       async function getFiles(dir) {
+         const dirents = await readdir(dir, { withFileTypes: true });
+         const files = await Promise.all(dirents.map((dirent) => {
+           const res = resolve(dir, dirent.name);
+           return dirent.isDirectory() ? getFiles(res) : res;
+         }));
+         return Array.prototype.concat(...files);
+       }
+
+
+       let allRegisteredFiles = await getFiles(commandsPath)
+       
+       return allRegisteredFiles
+
 
     }
 
-    sendPayload() {
 
-        module.exports.payloadGet = this.data
 
-    }
+ 
 
 }
+
+
+
 
 module.exports.Payload = Payload
