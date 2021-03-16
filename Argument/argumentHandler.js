@@ -20,26 +20,23 @@ class Argument {
     setArray() {
 
 
-        if (this.array) {
-            return this.argument = Array.prototype.slice.call(this.argument, 1)
-        } else {
+        if (this.array) return this.argument = Array.prototype.slice.call(this.argument, 1)
 
-            return this.argument = Array.prototype.slice.call(this.argument, 1).join(' ')
-        }
+        else return this.argument = Array.prototype.slice.call(this.argument, 1).join(' ')
 
 
     }
     /**
-         * All type checks: 
-         * string, integer, number, character, flex 
-         * 
-         * 
-         */
-        
+     * All type checks: 
+     * string, integer, number, character, flex 
+     * 
+     * 
+     */
+
     type() {
-   
+
         let desiredType = this.array ? this.argType.split(" ") : [this.argType]
-    
+
 
         let argLine = "";
         let index = 0;
@@ -96,13 +93,13 @@ class Argument {
 
     send() {
 
-        module.exports.argumentInstance = this.argument
+        module.exports.argumentInstance = this
 
     }
 
     static randomInt(min, max) {
 
-       return randomInt(min, max)
+        return randomInt(min, max)
 
 
     }
@@ -121,20 +118,3 @@ class Argument {
 
 
 module.exports.Argument = Argument
-
-
-
-
-
-/*name: 'profile',
- aliases: ['p'],
-    hasArguments: { 
-        argType: 'string',
-        multiple: false,
-    },
- ownerOnly: true 
- hasUserPermissions
- description: "checks your own profile",
- 
- 
- */

@@ -1,44 +1,74 @@
+const {
+    sern_handler
+} = require("../mainExecutor/executor");
 
-const { CommandIpsum } = require("../mainExecutor/executor");
+let {
+    join
+} = require('path')
+let fs = require('fs').promises
+
+class CustomEventHandler extends sern_handler {
+
+    /**
+     * Create custom events
+     * @param {Payload} payload - instanceof Payload 
+     * @param {Boolean} overrideAllListeners - remove all current listeners.
+     */
+
+    constructor(payload, overrideAllListeners) {
+
+        super(payload)
 
 
-class CustomEventHandler extends CommandIpsum {
+        if (payload.data.events == null) {
+            console.log(payload)
+            throw new Error('Cannot find your events folder.')
+
+        } else {
+
+            async function detectPayloadFiles() {
+
+                let allEventsinDirectory = await fs.readdir(join(require.main.path, payload.data.events), 'utf8')
+
+                let events = []
+
+                for (let i = 0; i < allEventsinDirectory.length; i++) {
+
+                    events.push(require(join(require.main.path, payload.data.events, allEventsinDirectory[i])))
+                }
+
+                return [events, allEventsinDirectory]
+
+            }
+
+            let run = (async function () {
+
+                let [events, allEventsinDirectory] = await detectPayloadFiles()
+
+                if (overrideAllListeners) {
+                    payload.data.client.removeAllListeners()
+                }
+
+                for (let i = 0; i < events.length; i++) {
+
+                    let listener = events[i].listener
+                    let callback = events[i].callback
+
+                    let eventName = allEventsinDirectory[i].replace('.js', "")
+                    payload.data.client[listener](eventName, callback.bind(null, payload))
+                }
 
 
-    async detectPayloadFiles() {
-        let {
-            join
-        } = require('path')
-        let fs = require('fs').promises
+
+            })()
 
 
-        let allEventsinDirectory = await fs.readdir(join(require.main.path, this.data.data.events), 'utf8')
-
-        let events = []
-        for (let i = 0; i < allEventsinDirectory.length; i++) {
-
-
-            events.push(require(join(require.main.path, this.data.data.events, allEventsinDirectory[i])))
         }
-
-        return [events, allEventsinDirectory]
     }
 
-    async run() {
-
-        let [events, allEventsinDirectory] = await this.detectPayloadFiles()
-
-        this.data.data.client.removeAllListeners()
 
 
-        for (let i = 0; i < events.length; i++) {
-            let eventName = allEventsinDirectory[i].replace('.js', "")
-            let eventCallback = events[i]
-            this.data.data.client.on(eventName, eventCallback.bind(null, this.data.data.client))
-        }
 
-
-    }
 
 }
 

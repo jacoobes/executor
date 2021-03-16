@@ -1,4 +1,3 @@
-
 /**
  * @param {Message} message - Your message parameter
  * @param {String} this.argument - Can take in an array or string. Returns Collection or Object of Collections
