@@ -6,7 +6,7 @@ class sern_handler {
 
 
         if (payload == null) {
-            return console.error('LoremIpsum requires a payload.')
+            return console.error('sern_handler requires a payload.')
         }
 
         if (payload.data.events == null) {
@@ -146,6 +146,9 @@ class sern_handler {
         }
 
     }
+
+   
+
 
 }
 

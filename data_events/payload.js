@@ -16,7 +16,8 @@ class Payload {
      * 
      * Gets all file directories and puts it into an Array.
      */
-    async #fileCache() {
+    
+    async fileCache() {
 
         const {
             join
@@ -101,6 +102,9 @@ class Payload {
         }
     }
 
+    isValidMessage(message) {
+        if (message.author.bot || !message.content.toLowerCase().startsWith(this.payload.data.prefix)) return false;
+    }
 
 }
 

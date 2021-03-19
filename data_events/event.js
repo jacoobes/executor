@@ -4,21 +4,22 @@ const {
 
 let {
     join
-} = require('path')
-let fs = require('fs').promises
+} = require('path');
+
+let fs = require('fs').promises;
 
 class CustomEventHandler extends sern_handler {
 
     /**
      * Create custom events
-     * @param {Payload} payload - instanceof Payload 
+     * @param {Payload} payload - instance of Payload 
      * @param {Boolean} overrideAllListeners - remove all current listeners.
      */
 
     constructor(payload, overrideAllListeners) {
 
         super(payload)
-
+        
 
         if (payload.data.events == null) {
             console.log(payload)
@@ -39,9 +40,9 @@ class CustomEventHandler extends sern_handler {
 
                 return [events, allEventsinDirectory]
 
-            }
+            };
 
-            let run = (async function () {
+           (async function () {
 
                 let [events, allEventsinDirectory] = await detectPayloadFiles()
 
@@ -56,21 +57,26 @@ class CustomEventHandler extends sern_handler {
 
                     let eventName = allEventsinDirectory[i].replace('.js', "")
                     payload.data.client[listener](eventName, callback.bind(null, payload))
+                        
                 }
 
 
 
-            })()
+            })();
 
 
         }
-    }
+        
+    } 
+  
 
+    
 
 
 
 
 }
+
 
 
 module.exports = CustomEventHandler

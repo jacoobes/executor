@@ -2,9 +2,9 @@
  
 sern_handler is a flexible, setup-friendly, utility package for your discord bot. Easy-to-use features and lots of customization. </br >
 
-[**Documentation**](#Quick-Docs-📜)  
+[**Documentation**](#Quick-Docs-📜)  </br >
 [**Upcoming Updates**](#Upcoming-Changes-/-Updates) </br >
-[**Source**](https://github.com/jacoobes/sern_handler)
+[**Source**](https://github.com/jacoobes/sern_handler) </br >
 ## Installation ▶️
 
 ```bash
@@ -51,9 +51,9 @@ module.exports.handler = handler
 ```
 
 ### Event file 
-
+Name of file is the name of listener. For example, this file name is "ready.js"
 ```js
-//Name of file is the name of listener. For example, this file is "ready.js"
+
 //this is a "ready" event
 const {handler} = require("your main file")
 module.exports = {
@@ -68,12 +68,6 @@ module.exports = {
     }
 
 }
-```
-
-```js
-//What should an event look like?
-
-
 ```
 
 # Quick Docs 📜
@@ -179,7 +173,7 @@ module.exports = {
 
 ```
 **usesArguments** : required if you want to enable argument handling of a commmand <br />
-**array** : do you want an array of arguments, split bu a space? <br/>
+**array** : do you want an array of arguments, split by a space? <br/>
 **argType** : For each argument wanted in the command, type check each. </br>
 </br>
 
@@ -196,9 +190,9 @@ module.exports = {
     <ul>
       <li> will not differentiate between Integer or Decimal
       </ul>
-  <li> Integer
-  <li> Decimal
-  <li> Character
+  <li> <b>Integer</b>
+  <li> <b>Decimal</b>
+  <li> <b>Character</b>
   </ul>
 
 **validate** : validator function with parameter of your arguments. must return Boolean </br>
@@ -222,7 +216,7 @@ module.exports = {
 You can make the function async. </br>
 **payload** is your Payload instance </br>
 **message** is from a message event </br>
-**argument** is an instance of Argument.  Meaning, you need to destructure it for its properties or access it by dot notation. view: [Argument](##class-Argument)</br>
+**argument** is an instance of Argument.  Meaning, you need to destructure it for its properties or access it by dot notation. view: [Argument](##class-argument)</br>
 </br>
 Argument parameter is packed with some util functions that can make coding easier.
 If you are unfamiliar with closures and nested functions (which will be structure of most `argument.util` functions), view docs [here](https://javascript.info/closure). Another [resource](https://www.youtube.com/watch?v=71AtaJpJHw0).
@@ -243,13 +237,14 @@ This list goes in descending order of priority.
 
 - [❌] More support for CustomEventHandler
   - [❌] Make Argument Class more flexible for custom events
+- [❌] Typescript support
 - [❌] Refactoring code
 - [❌] More argument utils functions
 - [❌] More argument customization
 - [❌] (Possible) Making command loading more efficient ?
 - [❌] Cleaner docs.
 - [❌] Cleaner argument handling.
-- [❌] Per server options
+- [❌] ~~Per server options~~ (Not pursuing)
 
 ## Bugs 🐛/ Suggestions ❓
 Report [here](https://discord.gg/KRDNjsmbqv)
