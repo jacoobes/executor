@@ -37,23 +37,9 @@ class sern_handler {
                     let command = commandCollection.get(messageEmitted[0]) || aliasCollection.get(messageEmitted[0]) || null
 
                     if (command == null) return message.reply('Command not found.')
-
-                    
-
-                    let {
-                        usesArguments: {
-                            argType = 'string',
-                            array = false,
-                            validate,
-                            typeError,
-                            validateError = "Arguments did not pass the test",
-                            noArgumentsError = 'Please provide arguments',
-                            notOwnerError = 'You do not have access to this command.'
-                        }
-                    } = command
-
-                    
-
+                 
+                    let notOwnerError = command.notOwnerError || "You do not have enough permissions to access this command"
+                
                     if (command.ownerOnly) {
                         if (!payload.data.owners.includes(message.author.id)) {
                             return message.reply(notOwnerError);
@@ -62,6 +48,19 @@ class sern_handler {
 
 
                     if (command.usesArguments) {
+
+                        let {
+                            usesArguments: {
+                                argType = 'string',
+                                array = false,
+                                validate,
+                                typeError,
+                                validateError = "Arguments did not pass the test",
+                                noArgumentsError = 'Please provide arguments',
+                                
+                            }
+                        } = command
+
 
                         let argument = new Argument(messageEmitted, array, argType, validate)
                         argument.setArray()

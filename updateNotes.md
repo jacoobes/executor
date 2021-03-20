@@ -33,3 +33,8 @@ fixed some minor README errors
 # 1.0.5
 
 -fixed argType was required bug
+
+# 1.0.6 - 1.0.8
+
+-fixed other bugs
+-undefined errors fixed
