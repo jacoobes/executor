@@ -52,8 +52,7 @@ class sern_handler {
                         }
                     } = command
 
-                    let argument = new Argument(messageEmitted, array, argType, validate)
-                    argument.setArray()
+                    
 
                     if (command.ownerOnly) {
                         if (!payload.data.owners.includes(message.author.id)) {
@@ -64,6 +63,8 @@ class sern_handler {
 
                     if (command.usesArguments) {
 
+                        let argument = new Argument(messageEmitted, array, argType, validate)
+                        argument.setArray()
 
                         if (!argument.ensureValidationFunction()) {
                             return message.reply(validateError)
