@@ -2,9 +2,9 @@
  
 sern_handler is a flexible, setup-friendly, utility package for your discord bot. Easy-to-use features and lots of customization. </br >
 
-[**Documentation**](#Quick-Docs-📜)  </br >
-[**Upcoming Updates**](#Upcoming-Changes-/-Updates) </br >
-[**Source**](https://github.com/jacoobes/sern_handler) </br >
+[**Documentation**](https://github.com/jacoobes/sern_handler/blob/master/README.md)  <br />
+[**Upcoming Updates**](https://github.com/jacoobes/sern_handler/blob/master/updateNotes.md) <br />
+[**Source**](https://github.com/jacoobes/sern_handler) <br />
 ## Installation ▶️
 
 ```bash
@@ -26,7 +26,7 @@ client: client                   //instance of Discord.Client
 const handler = new sern_handler(payload) //default Message event enabled
 
 ```
-If you want **custom events** enabled, add to your Payload the `events` header:
+❗️ **NOTE**: If you want **custom events** enabled, add to your Payload the `events` header:
 ```js
 //{commands : '/yourCommandsFolder',
 events: '/yourEventsFolder',
@@ -51,20 +51,54 @@ module.exports.handler = handler
 ```
 
 ### Event file 
-Name of file is the name of listener. For example, this file name is "ready.js"
+Name of file is the name of listener. For example, this file name is "message.js"
 ```js
 
-//this is a "ready" event
+//this is a "message" event
 const {handler} = require("your main file")
 module.exports = {
 
     listener: 'on',                     // the type of listener
     callback: (payload, message) => {   // callback for when event is emitted
-    
-    handler.displayOptions({
-      consoleRAM: true                 //consoles RAM usage
-    })
-    
+
+        if(handler.isNotValidMessage(message)) return; //check Class Argument for more info!
+
+        let command = await handler.fetchEmittedCommand(message) //fetches the command headers of a command
+
+        if (command.ownerOnly) {
+            if (!payload.data.owners.includes(message.author.id)) {
+                return message.reply(command.notOwnerError);
+            }
+        }
+
+        if(command.usesArguments) {
+
+            let {
+                usesArguments: {
+                    argType = 'string',
+                    array = false,
+                    validate,
+                    typeError,
+                    validateError = "Arguments did not pass the test",
+                    noArgumentsError = 'Please provide arguments',
+                    
+                }
+            } = command
+
+            let argument = new Argument(handler.formatMessage(message), array, argType, validate)
+            argument.setArray()
+
+            if(argument.type !== argType) {
+                return message.reply("Incorrect Types!") 
+            }
+
+        return command.callback(payload, message, argument)
+    }
+        return command.callback(payload, message)
+
+    }
+
+
     }
 
 }
@@ -87,7 +121,7 @@ module.exports = {
 </ul>
 
  - - - -
- ## **class sern_handler extends CustomEventHandler**
+ ## **class CustomEventHandler extends sern_handler**
 
   ### `constructor : (payload : Payload)` ### 
   **properties** :
@@ -97,13 +131,13 @@ module.exports = {
   **methods** :
   - [all super() methods](##class-sern_handler) 
    <ul> 
- <li> <b>isValidMessage (message : Message) </b> @returns <b> boolean </b> 
+ <li> <b>isNotValidMessage (message : Message) </b> @returns <b> boolean </b> 
     <ul> 
     <li> checks if message.content starts with `payload.data.prefix`
     <li> checks if author of message was a bot
     </ul>
  <li> <b>fetchEmittedCommand</b> @ returns <b> Object of `payload.data.commands()`, mapped by the command emitted.
-    
+ <li> <b> formatMessage(message) </b> @returns <b> String [] 
 </ul>
 
 - - - -
@@ -126,10 +160,11 @@ module.exports = {
 
   ### `constructor : (argument : String [], array : boolean, argType : string, validate: Function )` ### 
 
-  Extra variables: </br>
-  `utils : {check (message: Message) }` </br>
-
-  A bunch of util functions packed in a closure function. More info in command file section
+  **properties**: </br>
+   - utils : {check (message: Message) } </br>
+      - A bunch of util functions packed in a closure function. More info in command file section 
+   - type : given an array, returns the type of each in a string line. </br>
+ 
 
   **methods** : 
 
@@ -157,8 +192,8 @@ module.exports = {
   },
 };
 ```
-No arguments were attached, and the command would only activate when a user uses `prefix + profile`.
-
+No arguments were attached, and the command would only activate when a user uses `prefix + profile`. </br>
+**Using the custom event handler will allow you to add your own headers!**
 You can build this simple skeleton into something more complex : 
 
 ```js
@@ -222,15 +257,18 @@ module.exports = {
 
  callback: async (payload, message, argument) => { 
   
+     
+     //accessing argument properties by dot notation 
      console.log(argument.argument)
+     argument.utils.check(message) //closure. 
   },
 };
 
 ```
-You can make the function async. </br>
-**payload** is your Payload instance </br>
-**message** is from a message event </br>
-**argument** is an instance of Argument.  Meaning, you need to destructure it for its properties or access it by dot notation. view: [Argument](##class-argument)</br>
+- You can make the function async. </br>
+- **payload** is your Payload instance </br>
+- **message** is from a message event </br>
+- **argument** is an instance of Argument.  Meaning, you need to destructure it for its properties or access it by dot notation. view: [Argument](#class-argument)</br>
 </br>
 Argument parameter is packed with some util functions that can make coding easier.
 If you are unfamiliar with closures and nested functions (which will be structure of most `argument.util` functions), view docs [here](https://javascript.info/closure). Another [resource](https://www.youtube.com/watch?v=71AtaJpJHw0).
@@ -239,18 +277,20 @@ If you are unfamiliar with closures and nested functions (which will be structur
 
 argument.utils.check(message) -> 
 
-@returns
+@returns Array : [
 
-function isNSFW () -> @returns boolean, checks if channel is NSFW
-function memberHave(permissions: PermissionsResolvable as string) -> @returns boolean, checks if person sending message has these permissions.
-
+function isNSFW () -> @returns boolean, checks if channel is NSFW,
+function memberHave(permissions: PermissionsResolvable as string) -> @returns boolean, checks if person sending message has these permissions. , 
+]
 ```
 ### **Upcoming Changes / Updates** ###
 
 This list goes in descending order of priority.
 
-- [❌] More support for CustomEventHandler
-  - [❌] Make Argument Class more flexible for custom events
+- [✅] More support for CustomEventHandler
+  - check 1.0.9 - 1.1.0
+  - ~~[❌] Make Argument Class more flexible for custom events~~ discontinued
+    - will provide docs on how to use arguments accordingly
 - [❌] Typescript support
 - [❌] Refactoring code
 - [❌] More argument utils functions

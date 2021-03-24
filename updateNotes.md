@@ -36,8 +36,20 @@ fixed some minor README errors
 
 # 1.0.6 - 1.0.8
 
--fixed other bugs
--undefined errors fixed
+- fixed other bugs
+- undefined errors fixed
+
 # 1.0.9
 
--required Argument class bug
+- required Argument class bug
+
+# 1.1.0 
+
+- fixed some README errors again lol
+    - some hyperlinks were broken, updates and quick docs were fixed
+    - ~~class sern_handler extends CustomEventHandler~~ -> class customEventHandler extends sern_handler
+    - added some needed info to access Argument.utils functions 
+- new documentation on Argument class to help ease custom event creation
+- `argument.type()` is now a property instead of method.
+- a few more methods added to customEventHandler! check README
+- this update may be unstable. If you encounter bugs, please report. Check README.

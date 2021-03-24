@@ -48,6 +48,7 @@ class CustomEventHandler extends sern_handler {
                 if (overrideAllListeners) {
                     payload.data.client.removeAllListeners()
                 }
+               
 
                 for (let i = 0; i < events.length; i++) {
 
@@ -62,15 +63,11 @@ class CustomEventHandler extends sern_handler {
 
 
             })();
-
             
-
         }
 
-
-        
     } 
-   
+
     
     isNotValidMessage(message) {
       
@@ -86,7 +83,7 @@ class CustomEventHandler extends sern_handler {
         })
     }
   async fetchEmittedCommand(message) {
-    let formattedMessage =  message.content.slice(this.payload.data.prefix.length).trim().split(/\s+/g)
+    let formattedMessage =  this.formatMessage(message)
     
    let {commandCollection, aliasCollection } = await this.commandsAndAliases 
 
@@ -94,6 +91,10 @@ class CustomEventHandler extends sern_handler {
     return command
         
    }
+formatMessage(message) {
+
+return message.content.slice(this.payload.data.prefix.length).trim().split(/\s+/g)
+}
 
 }
 

@@ -11,7 +11,7 @@ class sern_handler {
 
         if (payload.data.events == null) {
 
-            (async function () {
+           let defaultRun = (async function () {
 
                 let {
                     commandCollection,
@@ -68,7 +68,7 @@ class sern_handler {
                         if (!argument.ensureValidationFunction()) {
                             return message.reply(validateError)
                         }
-                        if (argument.type() !== argType) {
+                        if (argument.type !== argType) {
 
                             if (argument.argument === '') {
                                 return message.reply(noArgumentsError)
@@ -77,18 +77,16 @@ class sern_handler {
                             return message.reply(typeError)
                         }
 
-
                         return command.callback(payload, message, argument)
 
                     }
-
                     return command.callback(payload, message)
-
 
                 })
 
 
             })()
+            module.exports.defaultRun = defaultRun
 
         }
     }

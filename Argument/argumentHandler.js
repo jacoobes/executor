@@ -6,7 +6,7 @@ const randomInt = require('./randomInt').getRandomInt
 class Argument {
 
 
-    constructor(argument, array, argType, validate) {
+    constructor(argument, array, argType = undefined, validate = null) {
 
         this.argument = argument
         this.array = array
@@ -19,22 +19,21 @@ class Argument {
 
     setArray() {
 
-
         if (this.array) return this.argument = Array.prototype.slice.call(this.argument, 1)
 
         else return this.argument = Array.prototype.slice.call(this.argument, 1).join(' ')
 
-
     }
     /**
      * All type checks: 
-     * string, integer, number, character, flex 
+     * string, integer, number, character, flex, integer, decimal
      * 
      * 
      */
 
-    type() {
+    get type() {
 
+        if (this.argType === undefined) return
         let desiredType = this.array ? this.argType.split(" ") : [this.argType]
 
 
@@ -89,12 +88,6 @@ class Argument {
         let passesTest = this.validate(this.argument)
 
         return passesTest
-    }
-
-    send() {
-
-        module.exports.argumentInstance = this
-
     }
 
     static randomInt(min, max) {
