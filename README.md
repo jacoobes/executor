@@ -275,6 +275,7 @@ module.exports = {
 </br>
 Argument parameter is packed with some util functions that can make coding easier.
 If you are unfamiliar with closures and nested functions (which will be structure of most `argument.util` functions), view docs [here](https://javascript.info/closure). Another [resource](https://www.youtube.com/watch?v=71AtaJpJHw0).
+
 ```
 //closure function
 
