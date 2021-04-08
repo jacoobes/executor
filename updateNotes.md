@@ -70,3 +70,9 @@ fixed some minor README errors
 -fixed a bug where if you had a string and another argType, you would get an error
 -added to docs 
     - make sure to optional chain your validate function
+
+# 1.10.5
+-added new displayOptions for CustomEventHandler
+    - consoleEvents to display detected events of the CustomEventHandler
+- I need to specify that custom Events are currently not supported by default sern_handler. You can add your own events, but sern_handler will not take care of it. This will change in the future, but if you plan to use other eventss such as GuildMemberAdd or others, sern_handler does not detect these. Read docs for more information.
+- Remember if you are experiencing bugs, please report them to me to get them fixed ASAP!

@@ -136,7 +136,9 @@ module.exports = {
       - glorified `payload.commands()` method but in a property.
 
   **methods** :
-  - [all super() methods](##class-sern_handler) 
+  - [all super() methods](##class-sern_handler)
+    -extra parameter - consoleEvents 
+      - will console Events detected in your events folder.
    <ul> 
  <li> <b>isNotValidMessage (message : Message) </b> @returns <b> boolean </b> 
     <ul> 
@@ -252,7 +254,7 @@ module.exports = {
   <li> <b>Character</b>
   </ul>
 
-**validate** : validator function with parameter of your arguments. must return Boolean </br>
+**validate** : validator function with parameter of your arguments. must return Boolean. If arguments does not pass boolean test, validateError will occur </br>
 **validateError**: Optional error message instead of default. </br>
 **noArgumentsError** : Optional no arguments error instead of default. </br>
 **ownerOnly** : accessible to owners given by the payload </br>
@@ -301,6 +303,7 @@ This list goes in descending order of priority.
 
 - [✅] More support for CustomEventHandler
   - check 1.0.9 - 1.1.0
+  - [✅]  new option to displayOptions
 - [❌] Default events for sern_handler coming soon
 - [❌] Refactoring code
 - [✅] More argument utils functions

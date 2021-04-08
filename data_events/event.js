@@ -95,6 +95,28 @@ formatMessage(message) {
 return message.content.slice(this.payload.data.prefix.length).trim().split(/\s+/g)
 }
 
+async displayOptions(wantsLog  = {consoleCommands : false, consoleRAM: false, customMessage: false, consoleEvents: false}) {
+
+    super.displayOptions({
+        consoleCommands: wantsLog.consoleCommands,
+        consoleRAM: wantsLog.consoleRAM,
+        customMessage: wantsLog.customMessage
+
+    })
+    if(wantsLog.consoleEvents) {
+        let allEventsinDirectory = await fs.readdir(join(require.main.path, this.payload.data.events), 'utf8')
+        
+        for (let eventName of allEventsinDirectory) {
+            eventName = eventName.replace('.js', "")
+            console.log(`Loading ... ${eventName} event` )
+        }
+    
+
+
+    }
+
+}
+
 }
 
 

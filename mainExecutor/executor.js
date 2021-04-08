@@ -66,15 +66,18 @@ class sern_handler {
                         argument.setArray()
                         
                         if (!argument.ensureValidationFunction()) {
-                            return message.reply(validateError)
+                            message.reply(validateError)
+                            return
                         }
                         if (argument.type !== argType) {
 
                             if (argument.argument === '') {
-                                return message.reply(noArgumentsError)
+                                message.reply(noArgumentsError)
+                                return
                             }
                             typeError = typeError || `Incorrect type. Require(s) \`${argType}\`. Received \`${argument.type}\``
-                            return message.reply(typeError)
+                                message.reply(typeError)
+                                return
                         }
 
                         return command.callback(payload, message, argument)
