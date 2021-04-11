@@ -65,12 +65,11 @@ class Argument {
                 if (header === 'number') {
 
                     argLine += 'number '
-                    this.argument[index] = parseInt(this.argument[index])
                     
                 } else {
 
                     argLine += argument % 1 === 0 ? 'integer ' : 'decimal ';
-                    this.argument[index] = parseInt(this.argument[index])
+                   
                 }
 
                 

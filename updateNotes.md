@@ -78,4 +78,4 @@ fixed some minor README errors
 - Remember if you are experiencing bugs, please report them to me to get them fixed ASAP!
 
 # 1.10.7 
--fixed a bug where if you had a number in your arguments, its type would be string.
+- undid type coercion bug 
