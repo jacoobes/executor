@@ -1,5 +1,5 @@
 # sern_handler 
- 
+# This porject is deprecated 
 sern_handler is a flexible, setup-friendly, utility package for your discord bot. Easy-to-use features and lots of customization. </br >
 
 [**Documentation**](https://github.com/jacoobes/sern_handler/blob/master/README.md)  <br />
